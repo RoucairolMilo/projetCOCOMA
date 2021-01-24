@@ -74,15 +74,6 @@ def MCPNego(a1, a2, zones) :
              []],
            [[],
             [v for v in zones[a1] if v in zones[a2]]]]
-    """
-        off = [
-            [ [],
-             [v for v in zones[a1] if v in zones[a2]]],
-           [[v for v in zones[a1] if v in zones[a2]],
-            []]
-           ]
-    """
-
 
 
 
@@ -116,7 +107,7 @@ def MCPNego(a1, a2, zones) :
 
         keptOffer = copy.deepcopy(off)
         noConcession = True
-        if Z1 < Z2 or (Z1 == Z2 and np.random.rand() < 0.5) :
+        if Z1 > Z2 or (Z1 == Z2 and np.random.rand() < 0.5) :
             print("a1 concede")
             #a1 doit prendre un objectif à a2
             bestconcession = utility(robots[a1], off[0][0])
@@ -136,10 +127,15 @@ def MCPNego(a1, a2, zones) :
                 print(str(ua1a2) + " > " + str(ua1a1) + "  or  " +str(ua2a1)+ " > " + str(ua2a2) + " ?")
                 if Z2 >= Z1:
                     # gardable, mais est-elle meilleure ?
-                    if ua1a1 > bestconcession:
+                    if bestconcession == 0:
                         keptOffer = copy.deepcopy(tryOffer)
                         bestconcession = ua1a1
                         noConcession = False
+                    else:
+                        if ua1a1 > bestconcession:
+                            keptOffer = copy.deepcopy(tryOffer)
+                            bestconcession = ua1a1
+                            noConcession = False
 
         else :
             print("a2 concede")
@@ -158,13 +154,17 @@ def MCPNego(a1, a2, zones) :
                 # print("new offer : " + str(tryOffer))
                 print("new Z : " + str(Z1) + " : " + str(Z2) + " pour : " + str(tryOffer))
                 print(str(ua1a2) + " > " + str(ua1a1) + "  or  " + str(ua2a1) + " > " + str(ua2a2) + " ?")
-                if Z1 <= Z2:
+                if Z1 >= Z2:
                     # gardable, mais est-elle meilleure ?
-                    if ua2a2 > bestconcession:
+                    if bestconcession == 0:
                         keptOffer = copy.deepcopy(tryOffer)
                         bestconcession = ua2a2
                         noConcession = False
-
+                    else:
+                        if ua2a2 > bestconcession:
+                            keptOffer = copy.deepcopy(tryOffer)
+                            bestconcession = ua2a2
+                            noConcession = False
 
 
         #print("utility : " + str( utility(robots[a1], tryOffer[a1][a1])) + " : " + str(utility(robots[a2], tryOffer[a2][a2])))
