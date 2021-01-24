@@ -64,24 +64,49 @@ def initOffersZeuthen() :
     return offers
 """
 
+def partage(zone) :
+    if(zone == []):
+        return [[[], []]]
+    zonebis = zone.copy()
+    ajout = zonebis.pop(0)
+    prevPartage = partage(zonebis)
+    l =[]
+    for i in prevPartage :
+        gauche = copy.deepcopy(i)
+        gauche[0].append(ajout)
+        droite = copy.deepcopy(i)
+        droite[1].append(ajout)
 
+        l.append(gauche)
+        l.append(droite)
 
-def MCPNego(a1, a2, zones) :
+    return l
+
+def ZeuthenMCPNego(a1, a2, zones) :
     print("MCP")
 
-
-    off = [[ [v for v in zones[a1] if v in zones[a2]],
+    """
+        off = [[ [v for v in zones[a1] if v in zones[a2]],
              []],
            [[],
             [v for v in zones[a1] if v in zones[a2]]]]
+    """
 
 
+    off = [[ [],
+             [v for v in zones[a1] if v in zones[a2]]],
+           [[v for v in zones[a1] if v in zones[a2]],
+            []
+            ]]   
 
+    print("start offer :" + str(off))
 
     MCPround = 0
-
     utiFaila1 = utility(robots[a1], off[0][0])
     utiFaila2 = utility(robots[a2], off[1][1])
+
+    utiFaila1 = utility(robots[a1], off[0][1])
+    utiFaila2 = utility(robots[a2], off[1][0])
 
     #utilité de l'agent 1 suivant l'offre de l'agent1 ...
     ua1a1 = utility(robots[a1], off[0][0])
@@ -90,8 +115,10 @@ def MCPNego(a1, a2, zones) :
     ua2a2 = utility(robots[a2], off[1][1])
 
     print("start utility : " + str(ua1a1) + " : " + str(ua2a2))
+    print("utility if no agreement : " + str(utiFaila1) + " : " + str(utiFaila2))
     noConcession = False
-    while not  noConcession :
+
+    while not  noConcession and MCPround <10 :
         print("\n")
         print("etape de nego : " + str(MCPround))
         MCPround +=1
@@ -102,69 +129,44 @@ def MCPNego(a1, a2, zones) :
         ua2a2 = utility(robots[a2], off[1][1])
         Z1 = 1 if (ua1a1 == utiFaila1) else (ua1a1 - ua1a2) / (ua1a1 - utiFaila1)
         Z2 = 1 if (ua2a2 == utiFaila2) else (ua2a2 - ua2a1) / (ua2a2 - utiFaila2)
-
         print("Z1 : " + str(Z1) + "  Z2 : " + str(Z2))
 
         keptOffer = copy.deepcopy(off)
         noConcession = True
-        if Z1 > Z2 or (Z1 == Z2 and np.random.rand() < 0.5) :
+        a1concede = False
+        if Z1 < Z2 or (Z1 == Z2 and np.random.rand() < 0.5) :
             print("a1 concede")
-            #a1 doit prendre un objectif à a2
-            bestconcession = utility(robots[a1], off[0][0])
-            for el in off[0][0] :
-                tryOffer = copy.deepcopy(off)
-                tryOffer[0][0].remove(el)
-                tryOffer[0][1].append(el)
-
-                ua1a1 = utility(robots[a1], tryOffer[0][0])
-                ua1a2 = utility(robots[a1], tryOffer[1][0])
-                ua2a1 = utility(robots[a2], tryOffer[0][1])
-                ua2a2 = utility(robots[a2], tryOffer[1][1])
-                Z1 = 1 if (ua1a1 == utiFaila1) else (ua1a1 - ua1a2) / (ua1a1 - utiFaila1)
-                Z2 = 1 if (ua2a2 == utiFaila2) else (ua2a2 - ua2a1) / (ua2a2 - utiFaila2)
-
-                print("new Z : " + str(Z1) + " : " + str(Z2) + " pour : " + str(tryOffer))
-                print(str(ua1a2) + " > " + str(ua1a1) + "  or  " +str(ua2a1)+ " > " + str(ua2a2) + " ?")
-                if Z2 >= Z1:
-                    # gardable, mais est-elle meilleure ?
-                    if bestconcession == 0:
-                        keptOffer = copy.deepcopy(tryOffer)
-                        bestconcession = ua1a1
-                        noConcession = False
-                    else:
-                        if ua1a1 > bestconcession:
-                            keptOffer = copy.deepcopy(tryOffer)
-                            bestconcession = ua1a1
-                            noConcession = False
-
+            a1concede = True
         else :
             print("a2 concede")
-            bestconcession = utility(robots[a2], off[1][1])
-            for el in off[1][1]:
-                tryOffer = copy.deepcopy(off)
-                tryOffer[1][1].remove(el)
-                tryOffer[1][0].append(el)
 
-                ua1a1 = utility(robots[a1], tryOffer[0][0])
-                ua1a2 = utility(robots[a1], tryOffer[1][0])
-                ua2a1 = utility(robots[a2], tryOffer[0][1])
-                ua2a2 = utility(robots[a2], tryOffer[1][1])
-                Z1 = 1 if (ua1a1 == utiFaila1) else (ua1a1 - ua1a2) / (ua1a1 - utiFaila1)
-                Z2 = 1 if (ua2a2 == utiFaila2) else (ua2a2 - ua2a1) / (ua2a2 - utiFaila2)
-                # print("new offer : " + str(tryOffer))
-                print("new Z : " + str(Z1) + " : " + str(Z2) + " pour : " + str(tryOffer))
-                print(str(ua1a2) + " > " + str(ua1a1) + "  or  " + str(ua2a1) + " > " + str(ua2a2) + " ?")
-                if Z1 >= Z2:
-                    # gardable, mais est-elle meilleure ?
-                    if bestconcession == 0:
-                        keptOffer = copy.deepcopy(tryOffer)
-                        bestconcession = ua2a2
-                        noConcession = False
-                    else:
-                        if ua2a2 > bestconcession:
-                            keptOffer = copy.deepcopy(tryOffer)
-                            bestconcession = ua2a2
-                            noConcession = False
+        bestconcession = -1000
+        possibleOffers = partage([v for v in zones[a1] if v in zones[a2]])
+        if a1concede :
+            possibleOffers = [[v, copy.deepcopy(off[1])] for v in possibleOffers]
+        else :
+            possibleOffers = [[copy.deepcopy(off[0]), v] for v in possibleOffers]
+
+        for tryOffer in possibleOffers:
+            ua1a1 = utility(robots[a1], tryOffer[0][0])
+            ua1a2 = utility(robots[a1], tryOffer[1][0])
+            ua2a1 = utility(robots[a2], tryOffer[0][1])
+            ua2a2 = utility(robots[a2], tryOffer[1][1])
+            Z1 = 1 if (ua1a1 == utiFaila1) else (ua1a1 - ua1a2) / (ua1a1 - utiFaila1)
+            Z2 = 1 if (ua2a2 == utiFaila2) else (ua2a2 - ua2a1) / (ua2a2 - utiFaila2)
+
+            print("new Z : " + str(Z1) + " : " + str(Z2) + " pour : " + str(tryOffer))
+            #print(str(ua1a2) + " > " + str(ua1a1) + " or " + str(ua2a1) + " > " + str(ua2a2) + " ?")
+            print(str(ua1a2) + " > " + str(utility(robots[a1], off[1][0])) + " or " + str(ua2a1) + " > " + str(utility(robots[a2], off[0][1])) + " ?")
+            #if (ua1a2 > ua1a1 and Z1 > Z2 and not a1concede) or (ua2a1 > ua2a2 and Z2 > Z1 and a1concede):
+            #if (ua1a2 > ua1a1 and not a1concede) or (ua2a1 > ua2a2 and a1concede):
+            if (ua1a2 > utility(robots[a1], off[1][0]) and not a1concede) or (ua2a1 > utility(robots[a2], off[0][1]) and a1concede):
+                # gardable, mais est-elle meilleure ?
+                if (ua1a1 if a1concede else ua2a2) > bestconcession:
+                    print("keep")
+                    keptOffer = copy.deepcopy(tryOffer)
+                    bestconcession = ua1a1 if a1concede else ua2a2
+                    noConcession = False
 
 
         #print("utility : " + str( utility(robots[a1], tryOffer[a1][a1])) + " : " + str(utility(robots[a2], tryOffer[a2][a2])))
@@ -186,23 +188,17 @@ def MCPNego(a1, a2, zones) :
 
             print("nashprod = " + str(nashprod))
 
-            return keptOffer #on suppose que c'est un accord viable TODO : tester ça
+            return keptOffer
 
 
         off = copy.deepcopy(keptOffer)
-
-
-
-
-
-
 
 round = 0
 
 finished = False
 Zones = initZones()
 
-MCPNego(0, 1, Zones)
+ZeuthenMCPNego(0, 1, Zones)
 
 
 """
