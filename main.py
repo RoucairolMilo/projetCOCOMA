@@ -74,6 +74,15 @@ def MCPNego(a1, a2, zones) :
              []],
            [[],
             [v for v in zones[a1] if v in zones[a2]]]]
+    """
+        off = [
+            [ [],
+             [v for v in zones[a1] if v in zones[a2]]],
+           [[v for v in zones[a1] if v in zones[a2]],
+            []]
+           ]
+    """
+
 
 
 
@@ -100,8 +109,8 @@ def MCPNego(a1, a2, zones) :
         ua1a2 = utility(robots[a1], off[1][0])
         ua2a1 = utility(robots[a2], off[0][1])
         ua2a2 = utility(robots[a2], off[1][1])
-        Z1 = 1 if  (ua1a1 == utiFaila1) else (ua1a1 - ua1a2)/(ua1a1-utiFaila1)
-        Z2 = 1 if  (ua2a2 == utiFaila2) else (ua2a1 - ua2a2)/(ua2a2-utiFaila2)
+        Z1 = 1 if (ua1a1 == utiFaila1) else (ua1a1 - ua1a2) / (ua1a1 - utiFaila1)
+        Z2 = 1 if (ua2a2 == utiFaila2) else (ua2a2 - ua2a1) / (ua2a2 - utiFaila2)
 
         print("Z1 : " + str(Z1) + "  Z2 : " + str(Z2))
 
@@ -121,21 +130,16 @@ def MCPNego(a1, a2, zones) :
                 ua2a1 = utility(robots[a2], tryOffer[0][1])
                 ua2a2 = utility(robots[a2], tryOffer[1][1])
                 Z1 = 1 if (ua1a1 == utiFaila1) else (ua1a1 - ua1a2) / (ua1a1 - utiFaila1)
-                Z2 = 1 if (ua2a2 == utiFaila2) else (ua2a1 - ua2a2) / (ua2a2 - utiFaila2)
+                Z2 = 1 if (ua2a2 == utiFaila2) else (ua2a2 - ua2a1) / (ua2a2 - utiFaila2)
 
                 print("new Z : " + str(Z1) + " : " + str(Z2) + " pour : " + str(tryOffer))
                 print(str(ua1a2) + " > " + str(ua1a1) + "  or  " +str(ua2a1)+ " > " + str(ua2a2) + " ?")
                 if Z2 >= Z1:
                     # gardable, mais est-elle meilleure ?
-                    if bestconcession == 0:
+                    if ua1a1 > bestconcession:
                         keptOffer = copy.deepcopy(tryOffer)
                         bestconcession = ua1a1
                         noConcession = False
-                    else:
-                        if ua1a1 > bestconcession:
-                            keptOffer = copy.deepcopy(tryOffer)
-                            bestconcession = ua1a1
-                            noConcession = False
 
         else :
             print("a2 concede")
@@ -150,21 +154,17 @@ def MCPNego(a1, a2, zones) :
                 ua2a1 = utility(robots[a2], tryOffer[0][1])
                 ua2a2 = utility(robots[a2], tryOffer[1][1])
                 Z1 = 1 if (ua1a1 == utiFaila1) else (ua1a1 - ua1a2) / (ua1a1 - utiFaila1)
-                Z2 = 1 if (ua2a2 == utiFaila2) else (ua2a1 - ua2a2) / (ua2a2 - utiFaila2)
+                Z2 = 1 if (ua2a2 == utiFaila2) else (ua2a2 - ua2a1) / (ua2a2 - utiFaila2)
                 # print("new offer : " + str(tryOffer))
                 print("new Z : " + str(Z1) + " : " + str(Z2) + " pour : " + str(tryOffer))
                 print(str(ua1a2) + " > " + str(ua1a1) + "  or  " + str(ua2a1) + " > " + str(ua2a2) + " ?")
-                if Z1 >= Z2:
+                if Z1 <= Z2:
                     # gardable, mais est-elle meilleure ?
-                    if bestconcession == 0:
+                    if ua2a2 > bestconcession:
                         keptOffer = copy.deepcopy(tryOffer)
                         bestconcession = ua2a2
                         noConcession = False
-                    else:
-                        if ua2a2 > bestconcession:
-                            keptOffer = copy.deepcopy(tryOffer)
-                            bestconcession = ua2a2
-                            noConcession = False
+
 
 
         #print("utility : " + str( utility(robots[a1], tryOffer[a1][a1])) + " : " + str(utility(robots[a2], tryOffer[a2][a2])))
