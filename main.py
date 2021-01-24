@@ -31,39 +31,6 @@ def initZones() :
         zones.append(offer)
     return zones
 
-"""
-def initOffers() :
-    offers = []
-    for rob in robots :
-        offer =[]
-        for rob2 in robots :
-            offerTo = []
-            if rob == rob2 :
-                for o in obj :
-                    if np.abs(rob[0]-o[0])< d and np.abs(rob[1]-o[1])< d :
-                        offerTo.append(o)
-            offer.append(offerTo)
-        offers.append(offer)
-    return offers
-
-def initOffersZeuthen() :
-    offers = []
-    for rob in range(len(robots)) :
-        offer =[[] for _ in range(len(robots))]
-        for o in obj :
-            if np.abs(robots[rob][0] - o[0]) < d and np.abs(robots[rob][1] - o[1]) < d:
-                assigned = False
-                for rob2 in range(len(robots)) :
-                    if np.abs(robots[rob2][0] - o[0]) < d and np.abs(robots[rob2][1] - o[1]) < d and rob != rob2 and not assigned:
-                        #on lui refile
-                        assigned = True
-                        offer[rob2].append(o)
-                if not assigned :
-                    offer[rob].append(o)
-        offers.append(offer)
-    return offers
-"""
-
 def partage(zone) :
     if(zone == []):
         return [[[], []]]
@@ -108,13 +75,6 @@ def ZeuthenMCPNego(a1, a2, zones) :
     utiFaila1 = utility(robots[a1], off[0][1])
     utiFaila2 = utility(robots[a2], off[1][0])
 
-    #utilité de l'agent 1 suivant l'offre de l'agent1 ...
-    ua1a1 = utility(robots[a1], off[0][0])
-    ua1a2 = utility(robots[a1], off[1][0])
-    ua2a1 = utility(robots[a2], off[0][1])
-    ua2a2 = utility(robots[a2], off[1][1])
-
-    print("start utility : " + str(ua1a1) + " : " + str(ua2a2))
     print("utility if no agreement : " + str(utiFaila1) + " : " + str(utiFaila2))
     noConcession = False
 
