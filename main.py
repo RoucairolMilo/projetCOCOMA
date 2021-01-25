@@ -49,7 +49,7 @@ def partage(zone) :
 
     return l
 
-def ZeuthenMCPNego(a1, a2, zones) :
+def ZeuthenMCPNego(a1, a2, zones, utiCona1 = 0, utiCona2 = 0 ) :
     print("MCP")
 
     """
@@ -72,8 +72,8 @@ def ZeuthenMCPNego(a1, a2, zones) :
     utiFaila1 = utility(robots[a1], off[0][0])
     utiFaila2 = utility(robots[a2], off[1][1])
 
-    utiFaila1 = utility(robots[a1], off[0][1])
-    utiFaila2 = utility(robots[a2], off[1][0])
+    utiFaila1 = max(utility(robots[a1], off[0][1]), utiCona1)
+    utiFaila2 = max(utility(robots[a2], off[1][0]), utiCona2)
 
     print("utility if no agreement : " + str(utiFaila1) + " : " + str(utiFaila2))
     noConcession = False
@@ -163,8 +163,8 @@ def ZeuthenMCPNego(a1, a2, zones) :
             print(keptOffer)
 
             ostar = keptOffer
-            ua1ostar = utility(robots[0], ostar[0][0])
-            ua2ostar = utility(robots[1], ostar[0][1])
+            ua1ostar = utility(robots[a1], ostar[0][0])
+            ua2ostar = utility(robots[a2], ostar[0][1])
 
             print(ua1ostar)
             print(ua2ostar)
@@ -175,7 +175,7 @@ def ZeuthenMCPNego(a1, a2, zones) :
 
             print("nashprod = " + str(nashprod))
 
-            return keptOffer
+            return ua1ostar, ua2ostar, keptOffer
 
 
         off = copy.deepcopy(keptOffer)
@@ -185,8 +185,8 @@ round = 0
 finished = False
 Zones = initZones()
 
-ZeuthenMCPNego(0, 1, Zones)
-
+utir1, utir2, _ = ZeuthenMCPNego(0, 1, Zones)
+ZeuthenMCPNego(2, 1, Zones, utiCona2= utir2 )
 
 """
 while not finished :
