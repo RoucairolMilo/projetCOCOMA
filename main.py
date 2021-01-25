@@ -87,9 +87,9 @@ def ZeuthenMCPNego(a1, a2, zones) :
         ua1a2 = utility(robots[a1], off[1][0])
         ua2a1 = utility(robots[a2], off[0][1])
         ua2a2 = utility(robots[a2], off[1][1])
-        Z1 = 1 if (ua1a1 == utiFaila1) else (ua1a1 - ua1a2) / (ua1a1 - utiFaila1)
-        Z2 = 1 if (ua2a2 == utiFaila2) else (ua2a2 - ua2a1) / (ua2a2 - utiFaila2)
-        print("Z1 : " + str(Z1) + "  Z2 : " + str(Z2))
+        iZ1 = 1 if (ua1a1 == utiFaila1) else (ua1a1 - ua1a2) / (ua1a1 - utiFaila1)
+        iZ2 = 1 if (ua2a2 == utiFaila2) else (ua2a2 - ua2a1) / (ua2a2 - utiFaila2)
+        print("Z1 : " + str(iZ1) + "  Z2 : " + str(iZ2))
 
         keptOffer = copy.deepcopy(off)
         noConcession = True
@@ -101,7 +101,7 @@ def ZeuthenMCPNego(a1, a2, zones) :
         keptOffera1 = copy.deepcopy(off[0])
         keptOffera2 = copy.deepcopy(off[1])
 
-        if Z1 <= Z2 :
+        if iZ1 <= iZ2 :
             bestconcession = -1000
             print("a1 concede")
             for tryOffer in PO:
@@ -125,7 +125,7 @@ def ZeuthenMCPNego(a1, a2, zones) :
                         bestconcession = ua1a1
                         print("keep at val " + str(bestconcession))
                         noConcession = False
-        if Z2 <= Z1 :
+        if iZ2 <= iZ1 :
             bestconcession = -1000
             print("a2 concede")
             for tryOffer in PO:
@@ -152,9 +152,13 @@ def ZeuthenMCPNego(a1, a2, zones) :
 
         #print("utility : " + str( utility(robots[a1], tryOffer[a1][a1])) + " : " + str(utility(robots[a2], tryOffer[a2][a2])))
         keptOffer = [copy.deepcopy(keptOffera1), copy.deepcopy(keptOffera2)]
+        deal = False
+        if(keptOffera1 == keptOffera2) :
+            print("yaaaay")
+            deal = True
         print("newOffer : " + str(keptOffer))
 
-        if(noConcession) :
+        if(noConcession or deal) :
             print("pas de nouvel accord trouvé, on arrête la négo")
             print(keptOffer)
 
