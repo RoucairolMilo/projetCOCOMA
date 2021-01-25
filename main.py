@@ -93,18 +93,22 @@ def ZeuthenMCPNego(a1, a2, zones) :
 
         keptOffer = copy.deepcopy(off)
         noConcession = True
-        bestconcession = -1000
 
         PO = partage([v for v in zones[a1] if v in zones[a2]])
+        offera1 = copy.deepcopy(off[0])
+        offera2 = copy.deepcopy(off[1])
+
+        keptOffera1 = copy.deepcopy(off[0])
+        keptOffera2 = copy.deepcopy(off[1])
 
         if Z1 <= Z2 :
+            bestconcession = -1000
             print("a1 concede")
-            possibleOffers = [[v, copy.deepcopy(off[1])] for v in PO]
-            for tryOffer in possibleOffers:
-                ua1a1 = utility(robots[a1], tryOffer[0][0])
-                ua1a2 = utility(robots[a1], tryOffer[1][0])
-                ua2a1 = utility(robots[a2], tryOffer[0][1])
-                ua2a2 = utility(robots[a2], tryOffer[1][1])
+            for tryOffer in PO:
+                ua1a1 = utility(robots[a1], tryOffer[0])
+                ua1a2 = utility(robots[a1], offera2[0])
+                ua2a1 = utility(robots[a2], tryOffer[1])
+                ua2a2 = utility(robots[a2], offera2[1])
                 Z1 = 1 if (ua1a1 == utiFaila1) else (ua1a1 - ua1a2) / (ua1a1 - utiFaila1)
                 Z2 = 1 if (ua2a2 == utiFaila2) else (ua2a2 - ua2a1) / (ua2a2 - utiFaila2)
 
@@ -117,18 +121,18 @@ def ZeuthenMCPNego(a1, a2, zones) :
                 if ua2a1 > utility(robots[a2], off[0][1]) :
                     # gardable, mais est-elle meilleure ?
                     if ua1a1 > bestconcession:
-                        keptOffer = copy.deepcopy(tryOffer)
+                        keptOffera1 = copy.deepcopy(tryOffer)
                         bestconcession = ua1a1
                         print("keep at val " + str(bestconcession))
                         noConcession = False
         if Z2 <= Z1 :
+            bestconcession = -1000
             print("a2 concede")
-            possibleOffers = [[copy.deepcopy(off[0]), v] for v in PO]
-            for tryOffer in possibleOffers:
-                ua1a1 = utility(robots[a1], tryOffer[0][0])
-                ua1a2 = utility(robots[a1], tryOffer[1][0])
-                ua2a1 = utility(robots[a2], tryOffer[0][1])
-                ua2a2 = utility(robots[a2], tryOffer[1][1])
+            for tryOffer in PO:
+                ua1a1 = utility(robots[a1], offera1[0])
+                ua1a2 = utility(robots[a1], tryOffer[0])
+                ua2a1 = utility(robots[a2], offera1[1])
+                ua2a2 = utility(robots[a2], tryOffer[1])
                 Z1 = 1 if (ua1a1 == utiFaila1) else (ua1a1 - ua1a2) / (ua1a1 - utiFaila1)
                 Z2 = 1 if (ua2a2 == utiFaila2) else (ua2a2 - ua2a1) / (ua2a2 - utiFaila2)
 
@@ -141,19 +145,15 @@ def ZeuthenMCPNego(a1, a2, zones) :
                 if ua1a2 > utility(robots[a1], off[1][0]) :
                     # gardable, mais est-elle meilleure ?
                     if ua2a2 > bestconcession:
-                        keptOffer = copy.deepcopy(tryOffer)
+                        keptOffera2 = copy.deepcopy(tryOffer)
                         bestconcession = ua2a2
                         print("keep at val " + str(bestconcession))
                         noConcession = False
 
-
-
-
-
-
-
         #print("utility : " + str( utility(robots[a1], tryOffer[a1][a1])) + " : " + str(utility(robots[a2], tryOffer[a2][a2])))
+        keptOffer = [copy.deepcopy(keptOffera1), copy.deepcopy(keptOffera2)]
         print("newOffer : " + str(keptOffer))
+
         if(noConcession) :
             print("pas de nouvel accord trouvé, on arrête la négo")
             print(keptOffer)
